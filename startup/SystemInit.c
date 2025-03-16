@@ -55,11 +55,21 @@ static void configure_gic(void)
 /* Configure MMU */
 static void configure_mmu(void)
 {
-    /* Basic MMU setup for direct mapping (virtual = physical) */
-    uint64_t tcr_el1 = 0;
-    uint64_t sctlr_el1 = 0;
+    /* Set up translation tables - simplifying to use a placeholder approach */
+    extern uint64_t _ttb0_base;
+    uint64_t *ttb0_base = &_ttb0_base;
+    
+    /* Initialize table with identity mapping (simple approach) */
+    /* In a real implementation, you would set up proper page tables here */
+    for (int i = 0; i < 512; i++) {
+        ttb0_base[i] = (i << 30) | 0x401;  /* Block entry, AF=1, normal memory */
+    }
+    
+    /* Set Translation Table Base Register */
+    __asm__ __volatile__("msr ttbr0_el1, %0" : : "r" (ttb0_base));
     
     /* Configure Translation Control Register */
+    uint64_t tcr_el1 = 0;
     tcr_el1 |= (1ULL << 20);   /* TBI0: Top Byte Ignored */
     tcr_el1 |= (1ULL << 8);    /* IRGN0: Inner Write-Back Read-Allocate Write-Allocate Cacheable */
     tcr_el1 |= (1ULL << 10);   /* ORGN0: Outer Write-Back Read-Allocate Write-Allocate Cacheable */
@@ -75,10 +85,8 @@ static void configure_mmu(void)
     mair_el1 |= 0x04 << 8;     /* Attr1: Device-nGnRE */
     __asm__ __volatile__("msr mair_el1, %0" : : "r" (mair_el1));
     
-    /* Setup identity mapping in translation tables */
-    /* TODO: Create and configure translation tables */
-    
     /* Enable MMU */
+    uint64_t sctlr_el1 = 0;
     __asm__ __volatile__("mrs %0, sctlr_el1" : "=r" (sctlr_el1));
     sctlr_el1 |= (1 << 0);     /* M: Enable MMU */
     sctlr_el1 |= (1 << 2);     /* C: Enable data cache */
@@ -88,7 +96,6 @@ static void configure_mmu(void)
     /* Instruction synchronization barrier */
     __asm__ __volatile__("isb");
 }
-
 /* Main system initialization function */
 void SystemInit(void)
 {

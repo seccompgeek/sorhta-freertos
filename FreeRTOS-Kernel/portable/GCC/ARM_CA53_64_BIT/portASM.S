@@ -1,3 +1,78 @@
+.section .text.startup
+.global _start
+.global _Reset
+
+.extern _stack_bottom
+.extern _stack_top
+.extern g_pfnVectors
+
+_start:
+_Reset:
+    // Disable caches and MMU
+    mrs x0, sctlr_el1
+    bic x0, x0, #(1 << 0)    // Clear M bit (disable MMU)
+    bic x0, x0, #(1 << 2)    // Clear C bit (disable D-cache)
+    bic x0, x0, #(1 << 12)   // Clear I bit (disable I-cache)
+    msr sctlr_el1, x0
+    dsb sy
+    isb
+
+    // Set up stack pointer
+    ldr x0, =_stack_top
+    mov sp, x0
+    
+    // Set up exception vectors
+    ldr x0, =g_pfnVectors
+    msr vbar_el1, x0
+    
+    // Check current exception level
+    mrs x0, CurrentEL
+    cmp x0, #(1 << 2)    // Check if EL1
+    beq setup_env        // Already at EL1, continue with initialization
+    
+    // If at EL2 or above, drop to EL1
+    adr x0, setup_env    // Where to continue after dropping to EL1
+    msr elr_el2, x0      // Set return address for ERET
+    
+    mov x0, #0x3c5       // SPSR value for EL1h (use SP_EL1) with interrupts disabled
+    msr spsr_el2, x0
+    eret                 // Return to EL1 at setup_env
+
+setup_env:
+    // Copy data section from flash to RAM
+    ldr x0, =_etext      // Source address
+    ldr x1, =_sdata      // Destination address
+    ldr x2, =_edata      // End of data in RAM
+    cmp x1, x2
+    beq zero_bss         // Skip if empty
+
+copy_data_loop:
+    ldr x3, [x0], #8     // Load 8 bytes and increment source
+    str x3, [x1], #8     // Store and increment destination
+    cmp x1, x2           // Check if we've reached the end
+    blo copy_data_loop   // Loop if not done
+
+zero_bss:
+    // Zero out BSS section
+    ldr x0, =_sbss       // Start of BSS
+    ldr x1, =_ebss       // End of BSS
+    cmp x0, x1
+    beq call_reset       // Skip if empty
+    mov x2, #0           // Value to store (zero)
+
+zero_bss_loop:
+    str x2, [x0], #8     // Store zero and increment
+    cmp x0, x1           // Check if we've reached the end
+    blo zero_bss_loop    // Loop if not done
+
+call_reset:
+    // Now jump to the C Reset_Handler
+    bl Reset_Handler
+    
+    // Should never return, but just in case
+    b .                  // Infinite loop
+
+// FreeRTOS port functions
 .section .text
 .global vPortRestoreTaskContext
 .global FreeRTOS_IRQ_Handler
