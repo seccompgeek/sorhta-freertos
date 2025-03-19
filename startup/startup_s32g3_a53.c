@@ -3,9 +3,6 @@
 /* Stack configuration */
 #define STACK_SIZE 0x10000    /* 64KB of stack space */
 
-__attribute__ ((section(".stack")))
-static uint8_t stack[STACK_SIZE] __attribute__((aligned(16)));
-
 /* Forward declarations */
 extern int main(void);
 extern void SystemInit(void);
@@ -21,8 +18,6 @@ void SError_Handler(void) __attribute__ ((weak, alias("Default_Handler")));
 /* Vector table for AArch64 - must be aligned to 2048 bytes (0x800) */
 __attribute__ ((section(".vectors"), aligned(2048)))
 void (* const g_pfnVectors[])(void) = {
-    /* Stack pointer */
-    (void*)&stack[STACK_SIZE],
     Reset_Handler,
     /* Current EL with SP0 */
     Sync_Handler,    /* Synchronous exception */
