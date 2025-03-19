@@ -3,7 +3,6 @@
 
 /* Global variables required by the port */
 uint64_t ulPortInterruptNesting = 0;
-uint64_t ulPortYieldRequired = 0;
 // uint64_t ulPortTaskHasFPUContext = pdFALSE;
 
 /* Function prototypes - implemented in portASM.S */

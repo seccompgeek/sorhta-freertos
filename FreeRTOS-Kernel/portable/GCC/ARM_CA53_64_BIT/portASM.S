@@ -2,8 +2,6 @@
 .global _start
 .global _Reset
 
-.extern _stack_bottom
-.extern _stack_top
 .extern g_pfnVectors
 
 _start:
@@ -17,9 +15,10 @@ _Reset:
     dsb sy
     isb
 
-    // Set up stack pointer
-    ldr x0, =_stack_top
-    mov sp, x0
+    // Set up stack pointer directly with immediate values
+    movz x0, #0x4000, lsl #16   // Load 0x40000000
+    movk x0, #0x8004            // Add 0x8004 to form 0x80044000
+    mov sp, x0                  // Set stack pointer
     
     // Set up exception vectors
     ldr x0, =g_pfnVectors

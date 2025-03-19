@@ -17,7 +17,7 @@ set(CMAKE_SYSTEM_PROCESSOR aarch64)
 set(COMMON_FLAGS "-march=armv8-a -mtune=cortex-a53")
 #set(CMAKE_C_FLAGS "${COMMON_FLAGS} -O2 -g")
 set(CMAKE_ASM_FLAGS "${COMMON_FLAGS}")
-set(CMAKE_C_FLAGS "${COMMON_FLAGS} -O2 -ffreestanding -fno-builtin")
+set(CMAKE_C_FLAGS "${COMMON_FLAGS} -Os -ffreestanding -fno-builtin")
 set(CMAKE_EXE_LINKER_FLAGS "-T${CMAKE_SOURCE_DIR}/startup/s32g3_cortex_a53.ld -nostdlib -nostartfiles -fno-exceptions -fno-rtti -Wl,--gc-sections -Wl,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map")
 
 # Include directories
