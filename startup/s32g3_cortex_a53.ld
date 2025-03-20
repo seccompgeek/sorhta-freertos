@@ -2,15 +2,15 @@
 MEMORY
 {
     /* Define memory regions with increased sizes */
-    CODE_REGION (rx)  : ORIGIN = 0x80000000, LENGTH = 0x80000    /* 512KB for code */
-    BSS_REGION  (rw)  : ORIGIN = 0x80080000, LENGTH = 0x200000   /* 2MB for BSS - increased */
-    DATA_REGION (rwx) : ORIGIN = 0x80280000, LENGTH = 0x100000   /* 1MB for other data */
-    PAGE_TABLES (rwx) : ORIGIN = 0x80380000, LENGTH = 0x20000    /* 128KB for page tables */
-    HEAP_REGION (rwx) : ORIGIN = 0x80400000, LENGTH = 0x100000   /* 1MB for heap */
-    STACK_REGION (rwx): ORIGIN = 0x80500000, LENGTH = 0x10000    /* 64KB for stack */
+    CODE_REGION (rx)  : ORIGIN = 0xE0000000, LENGTH = 0x80000    /* 512KB for code */
+    BSS_REGION  (rw)  : ORIGIN = 0xE0080000, LENGTH = 0x200000   /* 2MB for BSS - increased */
+    DATA_REGION (rwx) : ORIGIN = 0xE0280000, LENGTH = 0x100000   /* 1MB for other data */
+    PAGE_TABLES (rwx) : ORIGIN = 0xE0380000, LENGTH = 0x20000    /* 128KB for page tables */
+    HEAP_REGION (rwx) : ORIGIN = 0xE0400000, LENGTH = 0x100000   /* 1MB for heap */
+    STACK_REGION (rwx): ORIGIN = 0xE0500000, LENGTH = 0x10000    /* 64KB for stack */
 }
 
-ENTRY(Reset_Handler)
+ENTRY(_Reset)
 
 /* Define global symbols for memory region addresses */
 __code_region_start = ORIGIN(CODE_REGION);
@@ -40,6 +40,7 @@ __freertos_heap_size = __heap_end - __heap_start;
 
 SECTIONS
 {
+    PROVIDE(_stack_top = ORIGIN(STACK_REGION) + LENGTH(STACK_REGION));
     /* Code section - placed in CODE_REGION */
     .text :
     {

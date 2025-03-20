@@ -47,9 +47,9 @@
 #define IPC_MSG_MR(n)            (IPC_BASE + 0x40 + ((n) * 4))  /* Message Register */
 
 /* Memory regions for FreeRTOS on Core 1 */
-#define FREERTOS_CODE_BASE       0x80000000
+#define FREERTOS_CODE_BASE       0xE0000000
 #define FREERTOS_CODE_SIZE       0x00100000  /* 1MB for code */
-#define FREERTOS_HEAP_BASE       0x80100000
+#define FREERTOS_HEAP_BASE       0xE0100000
 #define FREERTOS_HEAP_SIZE       0x00F00000  /* 15MB for heap/stack */
 
 /* Constants for core control */
