@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "print.h"
 
 /* S32G3 specific registers */
 #define MC_ME_BASE               0x40088000
@@ -405,6 +406,17 @@ static void init_page_tables(void)
         attrs = L2_PAGE | ATTR_DEVICE_nGnRnE | ACCESS_FLAG | AP_RW_EL1;
         l2_table_periph[l2_idx + i] = (start_addr + (i * PAGE_SIZE)) | attrs;
     }
+
+    /* UART*/
+    start_addr = UART0_BASE;
+    end_addr = UART0_BASE + 0x1000;
+    num_pages = (end_addr - start_addr) / PAGE_SIZE;
+    l2_idx = (start_addr >> 12) & 0x1FF;
+
+    for (uint32_t i = 0; i < num_pages && l2_idx + i < 512; i++) {
+        attrs = L2_PAGE | ATTR_DEVICE_nGnRnE | ACCESS_FLAG | AP_RW_EL1;
+        l2_table_periph[l2_idx + i] = (start_addr + (i * PAGE_SIZE)) | attrs;
+    }
 }
 
 /**
@@ -546,6 +558,8 @@ static void init_freertos_core(void)
     
     /* Initialize cache coherency */
     init_cci();
+
+    uart_init();
     
     /* Mark this core as ready to run FreeRTOS */
     set_core_status(core_id, CORE_READY);
@@ -588,6 +602,7 @@ void SystemInit(void)
         /* Enable interrupts */
         __asm volatile("msr DAIFClr, #0xF");
         /* Return to startup code which will continue with FreeRTOS init */
+        print_init_complete();
         return;
     } else {
         /* For other cores */

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "print.h"
 
 /* Stack configuration */
 #define STACK_SIZE 0x10000    /* 64KB of stack space */

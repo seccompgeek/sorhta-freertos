@@ -37,6 +37,7 @@ set(FREERTOS_SOURCES
     ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel/event_groups.c
     ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel/stream_buffer.c
     ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel/portable/GCC/ARM_CA53_64_BIT/port.c
+    ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel/portable/GCC/ARM_CA53_64_BIT/print.c
     ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel/portable/GCC/ARM_CA53_64_BIT/portASM.S
     ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel/portable/MemMang/heap_4.c
 )

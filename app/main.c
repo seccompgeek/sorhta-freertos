@@ -145,8 +145,8 @@ static void prvSetupHardware(void)
     /* Note: Most hardware setup is done in SystemInit() */
     
     /* Configure LED pin as output */
-    write_reg(GPIO_BASE + GPIO_PDDR, read_reg(GPIO_BASE + GPIO_PDDR) | (1 << LED_PIN));
+    //write_reg(GPIO_BASE + GPIO_PDDR, read_reg(GPIO_BASE + GPIO_PDDR) | (1 << LED_PIN));
     
     /* Turn off LED initially */
-    write_reg(GPIO_BASE + GPIO_PCOR, (1 << LED_PIN));
+    //write_reg(GPIO_BASE + GPIO_PCOR, (1 << LED_PIN));
 }
